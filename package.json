@@ -4,7 +4,7 @@
   "version": "0.5.3",
   "type": "module",
   "description": "Daggerheart stat tracking for Owlbear Rodeo",
-  "author": "Edmund",
+  "author": "Arrowed",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

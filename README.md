@@ -166,6 +166,6 @@ Output goes to `dist/` folder. You can host this on:
 
 Based on [Owl Trackers](https://github.com/SeamusFinlayson/owl-trackers) by Seamus Finlayson, licensed under GNU GPLv3.
 
-Modified for Daggerheart by Edmund.
+Modified for Daggerheart by Arrowed.
 
 This project is licensed under GNU GPLv3.

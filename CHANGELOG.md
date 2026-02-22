@@ -20,6 +20,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Version mismatch**: Synchronized `package.json` version to `0.5.3` to match `manifest.json`
 
 ### Changed
+- **Author updated to Arrowed**: Updated author attribution across README and package.json
 - **Renamed setting to "Hide NPC stat bars"**: Clarified that the setting hides bars from the scene entirely (OBR doesn't support per-user visibility). Stats are still tracked and editable via the context menu popover.
 - **Visual display**: Replaced segment bars with compact colored circle badges showing current values (HP=red, Stress=purple, Armor=gray, Hope=yellow)
 

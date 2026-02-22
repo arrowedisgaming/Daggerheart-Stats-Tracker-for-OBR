@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Added
+- **CI/CD pipeline**: GitHub Actions workflow deploys to GitHub Pages automatically on push to `main`
 - **Enter key to save**: Pressing Enter in any stat input field now saves and closes the popover
 - **Math expressions**: Type `+2` or `-3` in the current value field and press Enter to apply the delta and save immediately
 - **Compact badge display**: Stats now show as colored circle badges with numbers instead of segment bars - more compact and easier to read

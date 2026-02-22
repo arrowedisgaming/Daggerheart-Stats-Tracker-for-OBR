@@ -1,6 +1,6 @@
 # Daggerheart Tracker for Owlbear Rodeo
 
-A simplified Owlbear Rodeo extension for tracking Daggerheart RPG character stats (HP, Stress, Hope, Armor) with visual discrete segment bars that persist across scene changes.
+A simple Owlbear Rodeo extension for tracking Daggerheart RPG character stats (HP, Stress, Hope, Armor) with visual discrete segment bars that persist across scene changes.
 
 ## Features
 

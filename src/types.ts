@@ -20,13 +20,3 @@ export interface DaggerheartStats {
   armor: TrackedStat;
   isPC: boolean;
 }
-
-/**
- * Room-level storage structure
- * Stored in room metadata at key "daggerheart-tracker/tokens"
- */
-export interface DaggerheartRoomMetadata {
-  "daggerheart-tracker/tokens": {
-    [tokenKey: string]: DaggerheartStats;
-  };
-}

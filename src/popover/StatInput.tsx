@@ -1,4 +1,4 @@
-import React from "react";
+import type { KeyboardEvent } from "react";
 
 interface StatInputProps {
   label: string;
@@ -20,7 +20,7 @@ export function StatInput({
   onSubmit,
 }: StatInputProps) {
   // Handle inline math (e.g., "+3", "-2") for current value, then submit
-  const handleCurrentKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleCurrentKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       const input = e.currentTarget.value;
 
@@ -43,7 +43,7 @@ export function StatInput({
   };
 
   // Submit on Enter for max value input
-  const handleMaxKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleMaxKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       onSubmit?.();
     }

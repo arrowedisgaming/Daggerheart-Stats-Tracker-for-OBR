@@ -6,17 +6,6 @@ import { DaggerheartStats } from "./types";
 export const EXTENSION_ID = "daggerheart-tracker";
 
 /**
- * Visual constants for segment rendering (legacy, kept for reference)
- * All values in OBR scene units (150 DPI = 1 grid square)
- */
-export const SEGMENT_WIDTH = 30;
-export const SEGMENT_HEIGHT = 18;
-export const SEGMENT_GAP = 6;
-export const BAR_GAP = 10;
-export const BAR_OFFSET_Y = -100;
-export const BAR_START_OFFSET = 25;
-
-/**
  * Badge display constants (new compact format)
  * Colored circles with numbers inside, positioned above the token
  */

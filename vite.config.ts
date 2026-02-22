@@ -1,13 +1,11 @@
 import { resolve } from "path";
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
-
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [react()],
-  // Use relative base path for GitHub Pages
-  // Set base to './' for local dev, or '/obrdhstats/' for GitHub Pages
-  base: process.env.GITHUB_PAGES === 'true' ? '/obrdhstats/' : './',
+  // Use relative base path for local dev, repo name path for GitHub Pages
+  base: process.env.GITHUB_PAGES === 'true' ? '/Daggerheart-Stats-Tracker-for-OBR/' : './',
   build: {
     rollupOptions: {
       input: {

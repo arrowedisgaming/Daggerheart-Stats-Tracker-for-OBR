@@ -3,12 +3,13 @@
   "version": "0.5.3",
   "manifest_version": 1,
   "author": "Edmund",
-  "icon": "https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/icon.svg",
+  "icon": "icon.svg",
   "description": "Simple HP, Stress, Hope, and Armor tracking for Daggerheart",
+  "background_url": "background.html",
   "action": {
     "title": "Daggerheart Tracker",
-    "icon": "https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/icon.svg",
-    "popover": "https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/index.html",
+    "icon": "icon.svg",
+    "popover": "index.html",
     "height": 300,
     "width": 280
   }

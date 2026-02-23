@@ -68,9 +68,18 @@ export async function renderBarsForToken(
   // Build new segments
   const segments = buildAllBars(token, stats, sceneDpi);
 
-  // Add to scene as shared items (visible to all players)
+  // Add to scene in two passes — circles first, then text on top.
+  // OBR doesn't guarantee z-ordering within a single addItems() batch,
+  // but items from later calls render above earlier ones.
+  const circles = segments.filter(
+    (item) => item.metadata[`${EXTENSION_ID}/type`] === "stat-badge"
+  );
+  const texts = segments.filter(
+    (item) => item.metadata[`${EXTENSION_ID}/type`] === "stat-badge-text"
+  );
+  if (circles.length > 0) await OBR.scene.items.addItems(circles);
+  if (texts.length > 0) await OBR.scene.items.addItems(texts);
   if (segments.length > 0) {
-    await OBR.scene.items.addItems(segments);
     console.log(`[DH] Rendered ${segments.length} bar segments for ${token.name}`);
   }
 }

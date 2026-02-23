@@ -7,6 +7,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ## [Unreleased]
 
 ### Fixed
+- **Badge text hidden behind circles after stat update**: Split badge rendering into two sequential `addItems()` calls (circles first, then text) so OBR's scene graph guarantees text always renders on top
 - **Context menu not appearing**: Added missing `background_url` to `manifest.json` so OBR loads the background script that registers the context menu
 - **Hardcoded URLs in context menu**: Replaced hardcoded `esoneill.github.io` URLs in `contextMenu.ts` with dynamically resolved base URLs using `import.meta.env.BASE_URL`, fixing broken icons and popover in the current deployment
 - **Manifest URLs**: Restored absolute URLs in `manifest.json` — OBR does not resolve relative paths from manifests, causing malformed URLs (e.g. `domain.ioindex.html`)

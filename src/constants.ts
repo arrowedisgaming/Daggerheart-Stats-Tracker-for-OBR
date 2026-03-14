@@ -6,16 +6,27 @@ import { DaggerheartStats } from "./types";
 export const EXTENSION_ID = "daggerheart-tracker";
 
 /**
- * Badge display constants (new compact format)
- * Colored circles with numbers inside, positioned above the token
+ * Badge display constants (compact format)
+ * Dark circles with glyph+number inside, positioned above the token.
+ * Badge size scales with token width, clamped to this range.
  */
-export const BADGE_SIZE = 28; // Circle diameter
-export const BADGE_GAP = 4; // Spacing between badges
-export const BADGE_FONT_SIZE = 16; // Font size for the number
+export const BADGE_SIZE_MIN = 16; // Minimum circle diameter (world units)
+export const BADGE_SIZE_MAX = 36; // Maximum circle diameter (world units)
+export const BADGE_GAP_RATIO = 0.15; // Gap as fraction of badge size
+export const BADGE_FONT_RATIO = 0.55; // Font size as fraction of badge size
+export const BADGE_FONT_RATIO_REDUCED = 0.42; // Reduced font for 3+ char strings (e.g. "♥10")
 
 /**
- * Color schemes for each stat type
- * Using Tailwind color palette for consistency
+ * Uniform badge colors — glyphs provide stat differentiation
+ */
+export const BADGE_COLORS = {
+  fill: "#1e293b", // slate-800
+  stroke: "#475569", // slate-600
+  text: "#f8fafc", // slate-50
+} as const;
+
+/**
+ * Legacy per-stat colors (kept for popover UI)
  */
 export const COLORS = {
   hp: {
@@ -41,6 +52,37 @@ export const COLORS = {
 } as const;
 
 export type StatType = keyof typeof COLORS;
+
+/**
+ * Unicode glyphs for each stat type (accessibility — not color-dependent)
+ */
+export const GLYPHS: Record<StatType, string> = {
+  hp: "♥",
+  stress: "‼",
+  armor: "⛊",
+  hope: "✹",
+};
+
+/**
+ * Per-glyph font scale multipliers — applied on top of the base font ratio.
+ * Adjusts for glyphs that render naturally larger/smaller at the same font size.
+ */
+export const GLYPH_FONT_SCALE: Record<StatType, number> = {
+  hp: 0.88,    // heart renders large, scale down to avoid crowding the number
+  stress: 1.0,
+  armor: 1.20, // shield renders small, scale up for visibility
+  hope: 1.0,
+};
+
+/**
+ * Whether to add a space between the glyph and the number.
+ */
+export const GLYPH_SPACING: Record<StatType, string> = {
+  hp: " ",
+  stress: " ",
+  armor: "",
+  hope: "",
+};
 
 /**
  * Default stats for PC tokens

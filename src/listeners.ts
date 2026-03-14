@@ -1,8 +1,15 @@
-import OBR from "@owlbear-rodeo/sdk";
-import { refreshAllBars, clearAllBars } from "./lifecycle";
+import OBR, { isImage, Image } from "@owlbear-rodeo/sdk";
+import { refreshAllBars, clearAllBars, invalidateTokenCache } from "./lifecycle";
+import { isItemTracked } from "./itemMetadata";
 
 let refreshTimeout: number | null = null;
 let isRefreshing = false;
+
+/**
+ * Cache of token scales, used to detect resize and trigger re-render.
+ * Keyed by OBR item ID → "scaleX,scaleY"
+ */
+const scaleCache = new Map<string, string>();
 
 /**
  * Set up listeners for scene changes
@@ -50,6 +57,37 @@ export function setupSceneListeners(): void {
       }
       refreshTimeout = null;
     }, 300);
+  });
+
+  // Listen for item changes (scale/resize) on CHARACTER layer
+  OBR.scene.items.onChange(async (items) => {
+    // Check tracked tokens for scale changes
+    let needsRefresh = false;
+    for (const item of items) {
+      if (item.layer !== "CHARACTER" || !isImage(item) || !isItemTracked(item)) {
+        continue;
+      }
+
+      const scaleKey = `${(item as Image).scale.x},${(item as Image).scale.y}`;
+      const cached = scaleCache.get(item.id);
+
+      if (cached !== undefined && cached !== scaleKey) {
+        // Scale changed — invalidate render cache so it re-renders
+        invalidateTokenCache(item.id);
+        needsRefresh = true;
+      }
+      scaleCache.set(item.id, scaleKey);
+    }
+
+    if (needsRefresh && !isRefreshing) {
+      console.log("[DH] Token scale changed, refreshing bars");
+      isRefreshing = true;
+      try {
+        await refreshAllBars();
+      } finally {
+        isRefreshing = false;
+      }
+    }
   });
 }
 

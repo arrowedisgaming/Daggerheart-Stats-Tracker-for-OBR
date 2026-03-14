@@ -2,20 +2,7 @@ import { Item } from "@owlbear-rodeo/sdk";
 import { DaggerheartStats } from "./types";
 import { saveTokenStats, removeTokenStats } from "./persistence";
 import { markItemAsTracked, unmarkItemAsTracked } from "./itemMetadata";
-import { renderBarsForToken, clearBarsForToken } from "./lifecycle";
-import { loadSettings } from "./settings";
-
-/**
- * Check if bars should be rendered for given stats based on current settings
- */
-async function shouldRenderBars(stats: DaggerheartStats): Promise<boolean> {
-  const settings = await loadSettings();
-  // Don't render NPC bars when hiding is enabled
-  if (settings.hideNpcStatsFromPlayers && !stats.isPC) {
-    return false;
-  }
-  return true;
-}
+import { clearBarsForToken } from "./lifecycle";
 
 /**
  * Initialize tracking for a token
@@ -27,18 +14,11 @@ export async function initializeTracking(
 ): Promise<void> {
   console.log(`[DH] Initializing tracking for token:`, item.name);
 
-  // Save to room metadata
-  await saveTokenStats(item, stats);
-
   // Mark item as tracked
   await markItemAsTracked(item.id);
 
-  // Render visual bars (if not hidden by settings)
-  if (await shouldRenderBars(stats)) {
-    await renderBarsForToken(item, stats);
-  } else {
-    console.log(`[DH] Skipping bar render for ${item.name} (hidden by settings)`);
-  }
+  // Save to room metadata — the metadata change listener will handle rendering
+  await saveTokenStats(item, stats);
 }
 
 /**
@@ -51,17 +31,8 @@ export async function updateStats(
 ): Promise<void> {
   console.log(`[DH] Updating stats for token:`, item.name);
 
-  // Save updated stats
+  // Save updated stats — the metadata change listener will handle rendering
   await saveTokenStats(item, stats);
-
-  // Re-render bars with new values (if not hidden by settings)
-  if (await shouldRenderBars(stats)) {
-    await renderBarsForToken(item, stats);
-  } else {
-    // Clear any existing bars since they should be hidden
-    await clearBarsForToken(item.id);
-    console.log(`[DH] Cleared bars for ${item.name} (hidden by settings)`);
-  }
 }
 
 /**

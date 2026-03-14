@@ -5,6 +5,7 @@ import { getTrackedItems } from "./itemMetadata";
 import { loadTokenStats } from "./persistence";
 import { loadSettings, saveSettings, isGM } from "./settings";
 import { DaggerheartStats } from "./types";
+import { GLYPHS } from "./constants";
 import "./index.css";
 
 /**
@@ -167,24 +168,24 @@ function ActionPopover() {
                 }}
               >
                 <div>
-                  <span style={{ color: "#dc2626", fontWeight: 500 }}>HP:</span>{" "}
+                  <span style={{ color: "#dc2626", fontWeight: 500 }}>{GLYPHS.hp} HP:</span>{" "}
                   {stats.hp.current}/{stats.hp.max}
                 </div>
                 <div>
                   <span style={{ color: "#9333ea", fontWeight: 500 }}>
-                    Stress:
+                    {GLYPHS.stress} Stress:
                   </span>{" "}
                   {stats.stress.current}/{stats.stress.max}
                 </div>
                 <div>
                   <span style={{ color: "#6b7280", fontWeight: 500 }}>
-                    Armor:
+                    {GLYPHS.armor} Armor:
                   </span>{" "}
                   {stats.armor.current}/{stats.armor.max}
                 </div>
                 <div>
                   <span style={{ color: "#eab308", fontWeight: 500 }}>
-                    Hope:
+                    {GLYPHS.hope} Hope:
                   </span>{" "}
                   {stats.hope.current}/{stats.hope.max}
                 </div>

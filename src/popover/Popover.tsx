@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import OBR, { Item } from "@owlbear-rodeo/sdk";
 import { DaggerheartStats } from "../types";
-import { DEFAULT_PC_STATS, EXTENSION_ID } from "../constants";
+import { DEFAULT_PC_STATS, EXTENSION_ID, GLYPHS } from "../constants";
 import { loadTokenStats, hasTokenStats } from "../persistence";
 import { initializeTracking, updateStats, removeTracking } from "../actions";
 import { StatInput } from "./StatInput";
@@ -150,7 +150,7 @@ export function Popover() {
       <div className="popover-body">
         {/* HP */}
         <StatInput
-          label="HP"
+          label={`${GLYPHS.hp} HP`}
           current={stats.hp.current}
           max={stats.hp.max}
           onCurrentChange={(v) => handleStatChange("hp", "current", v)}
@@ -161,7 +161,7 @@ export function Popover() {
 
         {/* Stress */}
         <StatInput
-          label="Stress"
+          label={`${GLYPHS.stress} Stress`}
           current={stats.stress.current}
           max={stats.stress.max}
           onCurrentChange={(v) => handleStatChange("stress", "current", v)}
@@ -173,7 +173,7 @@ export function Popover() {
         {/* Armor (only for PCs) */}
         {stats.isPC && (
           <StatInput
-            label="Armor"
+            label={`${GLYPHS.armor} Armor`}
             current={stats.armor.current}
             max={stats.armor.max}
             onCurrentChange={(v) => handleStatChange("armor", "current", v)}
@@ -186,7 +186,7 @@ export function Popover() {
         {/* Hope (only for PCs) */}
         {stats.isPC && (
           <StatInput
-            label="Hope"
+            label={`${GLYPHS.hope} Hope`}
             current={stats.hope.current}
             max={stats.hope.max}
             onCurrentChange={(v) => handleStatChange("hope", "current", v)}

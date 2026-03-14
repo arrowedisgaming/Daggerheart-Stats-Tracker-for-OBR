@@ -6,7 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-03-14
+
+### Added
+- **Stat glyphs on badges**: Each badge now shows a unicode glyph (♥ HP, ‼ Stress, ⛊ Armor, ✹ Hope) alongside the number for colorblind accessibility
+- **Glyphs in UI**: Stat glyphs now appear in the right-click edit popover and Party Stats dashboard labels
+- **Critical state slash overlay**: A red diagonal line renders through the badge circle when a stat is in its critical state — HP/Stress/Armor at max (fully marked), Hope at zero (fully spent)
+- **Local dev manifest plugin**: Vite plugin dynamically rewrites `manifest.json` URLs to point to the local dev server (or tunnel), enabling instant local testing without GitHub Pages cache delays
+- **Per-glyph font scaling**: Glyph and number are rendered as independent text items with separate font sizes — heart scaled down, shield scaled up, numbers stay consistent across all stats
+- **Per-glyph spacing**: Configurable space between glyph and number per stat type
+
+### Changed
+- **Badge colors**: Replaced per-stat colored circles with uniform dark slate badges — glyphs now provide stat differentiation instead of color
+- **Badge scaling**: Badges now scale proportionally with token size (clamped 16–36px), fixing overlap when tokens are shrunk to small sizes
+- **Re-render on resize**: Badges now re-render when a token is resized, keeping them properly positioned and sized
+
 ### Fixed
+- **Badge flickering on stat changes**: Badges no longer flicker for ALL tokens when any single token's stats change. Uses diff-based selective rendering that only updates tokens whose stats actually changed
+- **Double-render on stat update**: Stat changes no longer trigger two render cycles (direct call + metadata listener). Rendering now flows exclusively through the metadata change listener
 - **Badge text hidden behind circles after stat update**: Split badge rendering into two sequential `addItems()` calls (circles first, then text) so OBR's scene graph guarantees text always renders on top
 - **Context menu not appearing**: Added missing `background_url` to `manifest.json` so OBR loads the background script that registers the context menu
 - **Hardcoded URLs in context menu**: Replaced hardcoded `esoneill.github.io` URLs in `contextMenu.ts` with dynamically resolved base URLs using `import.meta.env.BASE_URL`, fixing broken icons and popover in the current deployment

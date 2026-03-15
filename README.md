@@ -2,6 +2,8 @@
 
 A free [Owlbear Rodeo](https://www.owlbear.rodeo) extension for tracking Daggerheart RPG character stats. Compact circular badges render above each token showing HP, Stress, Armor, and Hope — with stat glyphs, critical state indicators, and cross-scene persistence.
 
+![PC token with stat badges and the Party Stats dashboard](docs/images/StatsAndList.png)
+
 ## Features
 
 - **Circular Stat Badges**: Compact badges above tokens display current/max values with unicode glyphs (♥ HP, ‼ Stress, ⛊ Armor, ✹ Hope)
@@ -10,6 +12,10 @@ A free [Owlbear Rodeo](https://www.owlbear.rodeo) extension for tracking Daggerh
 - **Cross-Scene Persistence**: Stats survive scene changes within the same room
 - **Party Stats Dashboard**: View all PC stats at a glance from the toolbar
 - **PC & NPC Modes**: PCs track all four stats; NPCs show only HP and Stress
+
+  | PC (all 4 stats) | NPC (HP & Stress only) | NPC with critical state |
+  |:-:|:-:|:-:|
+  | ![](docs/images/PCs-hero.png) | ![](docs/images/NPC1.png) | ![](docs/images/NPC-Full.png) |
 - **Math Expressions**: Type `+2` or `-3` in a stat field to apply deltas quickly
 - **Multiplayer**: All players see badges; any player can add/edit stats on their tokens
 
@@ -34,9 +40,9 @@ A free [Owlbear Rodeo](https://www.owlbear.rodeo) extension for tracking Daggerh
 
 ### Editing Stats
 
-- Right-click a tracked token → **Edit Daggerheart Stats**
-- Adjust values directly, or type math expressions like `+2` or `-1` and press Enter
-- Toggle between PC and NPC mode as needed
+Right-click a tracked token → **Edit Daggerheart Stats** to open the stat editor. Adjust values directly, or type math expressions like `+2` or `-1` and press Enter. Toggle between PC and NPC mode as needed.
+
+![Right-click context menu and stat editor popover](docs/images/RightClickPC.png)
 
 ### Party Stats Dashboard
 

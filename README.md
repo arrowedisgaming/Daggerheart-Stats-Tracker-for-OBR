@@ -1,166 +1,73 @@
 # Daggerheart Tracker for Owlbear Rodeo
 
-A simple Owlbear Rodeo extension for tracking Daggerheart RPG character stats (HP, Stress, Hope, Armor) with visual discrete segment bars that persist across scene changes.
+A free [Owlbear Rodeo](https://www.owlbear.rodeo) extension for tracking Daggerheart RPG character stats. Compact circular badges render above each token showing HP, Stress, Armor, and Hope — with stat glyphs, critical state indicators, and cross-scene persistence.
 
 ## Features
 
-- **Simple Stat Tracking**: Track HP, Stress, Armor, and Hope for characters
-- **Party Stats Dashboard**: View all PC stats at a glance in the action popover (new in v0.2.0)
-- **Cross-Scene Persistence**: Token stats survive scene changes within the same room
-- **Visual Feedback**: Discrete segment bars above tokens show stats at a glance
-- **Multiplayer Support**: Any player can add/edit stats on their tokens, everyone sees all bars
-- **PC/NPC Support**: Toggle between PC (with Hope & Armor) and NPC (simplified stats) modes
-- **Easy to Use**: Right-click any CHARACTER token to add or edit stats
+- **Circular Stat Badges**: Compact badges above tokens display current/max values with unicode glyphs (♥ HP, ‼ Stress, ⛊ Armor, ✹ Hope)
+- **Critical State Indicators**: A red slash overlay appears when a stat reaches its critical state (HP/Stress/Armor at max, Hope at zero)
+- **Proportional Scaling**: Badges scale with token size so they stay readable at any zoom level
+- **Cross-Scene Persistence**: Stats survive scene changes within the same room
+- **Party Stats Dashboard**: View all PC stats at a glance from the toolbar
+- **PC & NPC Modes**: PCs track all four stats; NPCs show only HP and Stress
+- **Math Expressions**: Type `+2` or `-3` in a stat field to apply deltas quickly
+- **Multiplayer**: All players see badges; any player can add/edit stats on their tokens
 
-## Prerequisites
+## Installation
 
-Before you can run this extension, you need:
+1. Go to [owlbear.rodeo](https://www.owlbear.rodeo) and sign in
+2. Click your **profile icon** (top right) → **Extensions** → **Add Extension**
+3. Paste the manifest URL:
+   ```
+   https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/manifest.json
+   ```
+4. Click **Add**
 
-- **Node.js 18+** (currently not installed)
-- **npm** or **pnpm** package manager
+## How to Use
 
-### Installing Node.js
+### Adding Stats to a Token
 
-1. Visit https://nodejs.org/
-2. Download and install the LTS version
-3. Restart your terminal after installation
+1. Open or create a room and add CHARACTER tokens to the scene
+2. Right-click a token → **Add Daggerheart Stats**
+3. Set HP, Stress, Armor, and Hope values
+4. Circular badges appear above the token automatically
 
-## Setup
+### Editing Stats
 
-Once Node.js is installed:
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-```
-
-The dev server will start at `http://localhost:5173`
-
-## Adding to Owlbear Rodeo
-
-1. Go to https://www.owlbear.rodeo and sign in
-2. Click your profile icon (top right)
-3. Go to **Extensions**
-4. Click **Add Extension**
-5. Paste: `http://localhost:5173/manifest.json`
-6. Click **Add**
-
-## Using in a Room
-
-1. Open or create an Owlbear Rodeo room
-2. Click the **Extensions** button (puzzle piece icon)
-3. Toggle on "Daggerheart Tracker"
-4. Click the **Daggerheart Tracker** icon in the toolbar to view the Party Stats dashboard
-5. Right-click any CHARACTER token and select:
-   - **Add Daggerheart Stats** (for new tokens)
-   - **Edit Daggerheart Stats** (for tracked tokens)
+- Right-click a tracked token → **Edit Daggerheart Stats**
+- Adjust values directly, or type math expressions like `+2` or `-1` and press Enter
+- Toggle between PC and NPC mode as needed
 
 ### Party Stats Dashboard
 
-The action popover shows a live dashboard of all PC stats in the current scene:
-- View HP, Stress, Armor, and Hope for all party members at once
-- Auto-updates when stats change
-- Only shows PCs (NPCs are hidden from this view)
+Click the **Daggerheart Tracker** icon in the toolbar to open the dashboard. It shows a live summary of all PC stats in the current scene — auto-updates when stats change.
+
+### GM Settings
+
+- **Hide NPC stat bars**: GMs can toggle this to hide NPC badges from the scene entirely. NPC stats remain editable via the context menu.
+
+## Stats Reference
+
+| Stat   | Glyph | Color  | Default (PC) | Default (NPC) |
+| ------ | ----- | ------ | ------------- | -------------- |
+| HP     | ♥     | Red    | 6/6           | 6/6            |
+| Stress | ‼     | Purple | 0/6           | 0/6            |
+| Armor  | ⛊     | Gray   | 0/6           | Hidden (0/0)   |
+| Hope   | ✹     | Gold   | 2/5           | Hidden (0/0)   |
 
 ## How It Works
 
-### Data Persistence
+Stats are stored in Owlbear Rodeo room metadata, so they persist across scene changes within the same room. Each token is identified by a stable UUID — renaming or copying tokens won't break their stats.
 
-- **Room Metadata**: Stats are stored in room metadata, surviving scene changes
-- **Token Key**: Tokens are identified by `{name}::{imageHash}` for stability across scenes
-- **Item Metadata**: Tracks which tokens have stats enabled for quick filtering
-
-### Visual Rendering
-
-- **Shared Items**: Bars are visible to all players in the room
-- **Discrete Segments**: Each stat point is a colored rectangle
-- **Attachment**: Bars are attached to tokens and move with them
-- **Vertical Stacking**: Bars stack vertically above tokens (HP → Stress → Armor → Hope)
-
-### Stats Tracked
-
-**Rendering Order (top to bottom):**
-
-| Stat   | Type        | Visual  | Default PC | Default NPC        |
-| ------ | ----------- | ------- | ---------- | ------------------ |
-| HP     | current/max | Red     | 6/6        | 6/6                |
-| Stress | current/max | Purple  | 0/6        | 0/6                |
-| Armor  | current/max | Gray    | 0/6        | 0/0 (hidden)       |
-| Hope   | current/max | Gold    | 2/5        | 0/0 (hidden)       |
-
-**Note**: NPCs hide both Armor and Hope bars (max set to 0). Only HP and Stress are shown for NPCs.
-
-## Project Structure
-
-```
-src/
-├── main.tsx              # Main entry point
-├── types.ts              # TypeScript interfaces
-├── constants.ts          # Colors, dimensions, defaults
-├── persistence.ts        # Room metadata storage
-├── itemMetadata.ts       # Item-level tracking marks
-├── rendering.ts          # Bar/segment builders
-├── lifecycle.ts          # Render/clear/refresh functions
-├── contextMenu.ts        # Context menu setup
-├── listeners.ts          # Scene change handlers
-├── actions.ts            # High-level user actions
-└── popover/
-    ├── main.tsx          # Popover entry point
-    ├── Popover.tsx       # Main edit UI
-    ├── StatInput.tsx     # Reusable stat input
-    └── popover.css       # Popover styles
-```
-
-## Building for Production
-
-```bash
-npm run build
-```
-
-Output goes to `dist/` folder. You can host this on:
-- GitHub Pages
-- Cloudflare Pages
-- Netlify
-- Any static hosting service
-
-## Troubleshooting
-
-### Extension doesn't appear
-- Ensure dev server is running (`npm run dev`)
-- Check the manifest URL is correct
-- Look for errors in browser console
-
-### Bars don't render
-- Check that tokens are on the CHARACTER layer
-- Verify scene is ready in console logs
-- Check browser console for errors
-
-### Stats don't persist
-- Verify room metadata in console: `await OBR.room.getMetadata()`
-- Check that token key is consistent
-- Look for save/load errors in console
+Badges are rendered as OBR Shape items attached to tokens. Only the GM client creates/deletes badge shapes to prevent race conditions in multiplayer sessions.
 
 ## Changelog
 
-### v0.2.0
-- **Party Stats Dashboard**: Added live dashboard showing all PC stats in the action popover
-- **NPC Mode Update**: NPCs now hide both Armor and Hope bars (not just Hope)
-- **UI Improvements**: Reordered stat inputs to match visual rendering order (HP → Stress → Armor → Hope)
+See [CHANGELOG.md](CHANGELOG.md) for the full version history.
 
-### v0.1.9
-- Changed Armor from simple number to current/max tracking (like other stats)
-- Updated bar positioning to render directly above tokens
-- Improved visual stacking order
+## Contributing
 
-### v0.1.0 - v0.1.8
-- Initial release with core functionality
-- Cross-scene persistence via room metadata
-- Multiplayer support with shared bars
-- Context menu integration
-- PC/NPC toggle support
+Want to develop or deploy your own version? See [DEPLOYMENT.md](DEPLOYMENT.md) for local development setup, building, and GitHub Pages deployment instructions.
 
 ## License
 

@@ -1,3 +1,4 @@
+import { Command, PathCommand } from "@owlbear-rodeo/sdk";
 import { DaggerheartStats } from "./types";
 
 /**
@@ -14,14 +15,14 @@ export const BADGE_SIZE_MIN = 16; // Minimum circle diameter (world units)
 export const BADGE_SIZE_MAX = 36; // Maximum circle diameter (world units)
 export const BADGE_GAP_RATIO = 0.15; // Gap as fraction of badge size
 export const BADGE_FONT_RATIO = 0.55; // Font size as fraction of badge size
-export const BADGE_FONT_RATIO_REDUCED = 0.42; // Reduced font for 3+ char strings (e.g. "♥10")
+export const BADGE_FONT_RATIO_REDUCED = 0.50; // Reduced font for 2-digit numbers
 
 /**
  * Uniform badge colors — glyphs provide stat differentiation
  */
 export const BADGE_COLORS = {
   fill: "#1e293b", // slate-800
-  stroke: "#475569", // slate-600
+  stroke: "#f8fafc", // slate-50 (white)
   text: "#f8fafc", // slate-50
 } as const;
 
@@ -58,31 +59,83 @@ export type StatType = keyof typeof COLORS;
  */
 export const GLYPHS: Record<StatType, string> = {
   hp: "♥",
-  stress: "‼",
+  stress: "⚡",
   armor: "⛊",
   hope: "✹",
 };
 
-/**
- * Per-glyph font scale multipliers — applied on top of the base font ratio.
- * Adjusts for glyphs that render naturally larger/smaller at the same font size.
- */
-export const GLYPH_FONT_SCALE: Record<StatType, number> = {
-  hp: 0.88,    // heart renders large, scale down to avoid crowding the number
-  stress: 1.0,
-  armor: 1.20, // shield renders small, scale up for visibility
-  hope: 1.0,
-};
 
 /**
- * Whether to add a space between the glyph and the number.
+ * Vector glyph paths — normalized coordinates (unit scale, centered at origin).
+ * Each path fits roughly within a -0.5..0.5 bounding box.
  */
-export const GLYPH_SPACING: Record<StatType, string> = {
-  hp: " ",
-  stress: " ",
-  armor: "",
-  hope: "",
+
+/** Heart (HP) — two-lobed heart with bottom point */
+const HEART_PATH: PathCommand[] = [
+  [Command.MOVE, 0, 0.4],
+  [Command.CUBIC, -0.1, 0.2, -0.5, 0.05, -0.5, -0.15],
+  [Command.CUBIC, -0.5, -0.4, -0.15, -0.55, 0, -0.35],
+  [Command.CUBIC, 0.15, -0.55, 0.5, -0.4, 0.5, -0.15],
+  [Command.CUBIC, 0.5, 0.05, 0.1, 0.2, 0, 0.4],
+  [Command.CLOSE],
+];
+
+/** Lightning bolt (Stress) — jagged bolt shape, wide stroke */
+const STRESS_PATH: PathCommand[] = [
+  [Command.MOVE, 0.15, -0.5],
+  [Command.LINE, -0.25, 0.0],
+  [Command.LINE, 0.08, 0.0],
+  [Command.LINE, -0.15, 0.5],
+  [Command.LINE, 0.40, -0.1],
+  [Command.LINE, 0.10, -0.1],
+  [Command.CLOSE],
+];
+
+/** Shield (Armor) — wide top tapering to a point at bottom */
+const ARMOR_PATH: PathCommand[] = [
+  [Command.MOVE, 0, 0.5],
+  [Command.CUBIC, -0.15, 0.3, -0.45, 0.15, -0.45, -0.05],
+  [Command.LINE, -0.45, -0.45],
+  [Command.LINE, 0.45, -0.45],
+  [Command.LINE, 0.45, -0.05],
+  [Command.CUBIC, 0.45, 0.15, 0.15, 0.3, 0, 0.5],
+  [Command.CLOSE],
+];
+
+/** 8-pointed star (Hope) — alternating outer/inner radius points */
+const HOPE_PATH: PathCommand[] = [
+  [Command.MOVE, 0, -0.5],
+  [Command.LINE, 0.08, -0.18],
+  [Command.LINE, 0.35, -0.35],
+  [Command.LINE, 0.18, -0.08],
+  [Command.LINE, 0.5, 0],
+  [Command.LINE, 0.18, 0.08],
+  [Command.LINE, 0.35, 0.35],
+  [Command.LINE, 0.08, 0.18],
+  [Command.LINE, 0, 0.5],
+  [Command.LINE, -0.08, 0.18],
+  [Command.LINE, -0.35, 0.35],
+  [Command.LINE, -0.18, 0.08],
+  [Command.LINE, -0.5, 0],
+  [Command.LINE, -0.18, -0.08],
+  [Command.LINE, -0.35, -0.35],
+  [Command.LINE, -0.08, -0.18],
+  [Command.CLOSE],
+];
+
+/** Lookup: normalized path commands per stat type */
+export const GLYPH_PATHS: Record<StatType, PathCommand[]> = {
+  hp: HEART_PATH,
+  stress: STRESS_PATH,
+  armor: ARMOR_PATH,
+  hope: HOPE_PATH,
 };
+
+/** Glyph diameter as fraction of badge size */
+export const GLYPH_PATH_SCALE = 0.65;
+
+/** Glyph center Y offset as fraction of badge size (negative = above circle center) */
+export const GLYPH_Y_OFFSET_RATIO = -0.55;
 
 /**
  * Default stats for PC tokens

@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-03-15
+
+### Added
+- **Vector glyph badges**: Each stat badge now renders a colored vector path glyph above the circle — heart (HP), lightning bolt (Stress), shield (Armor), star (Hope) — with the number centered inside
+- **4-pass z-ordering**: Glyph paths get their own `addItems()` pass so they render consistently above circles and below text
+
+### Changed
+- **Stress glyph**: Changed from double-exclamation (‼) to lightning bolt (⚡) across badges, Party Stats dashboard, and edit popover
+- **Badge circle outline**: White stroke, thicker (2px at 80% opacity) for better visibility against varied map backgrounds
+- **Double-digit number sizing**: Increased reduced font ratio from 0.42 to 0.50 — numbers have more room now that glyphs are above the circle
+
+### Removed
+- **Split-text glyph rendering**: Replaced two-text-item split-point approach with single centered `buildText()` per badge. Removed `GLYPH_FONT_SCALE` and `GLYPH_SPACING` constants
+
 ## [0.7.0] - 2026-03-14
 
 ### Added

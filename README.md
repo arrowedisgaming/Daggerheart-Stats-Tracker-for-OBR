@@ -6,7 +6,7 @@ A free [Owlbear Rodeo](https://www.owlbear.rodeo) extension for tracking Daggerh
 
 ## Features
 
-- **Circular Stat Badges**: Compact badges above tokens display current/max values with unicode glyphs (♥ HP, ‼ Stress, ⛊ Armor, ✹ Hope)
+- **Circular Stat Badges**: Compact badges above tokens display current values with colored vector glyphs (♥ HP, ⚡ Stress, ⛊ Armor, ✹ Hope)
 - **Critical State Indicators**: A red slash overlay appears when a stat reaches its critical state (HP/Stress/Armor at max, Hope at zero)
 - **Proportional Scaling**: Badges scale with token size so they stay readable at any zoom level
 - **Cross-Scene Persistence**: Stats survive scene changes within the same room
@@ -57,7 +57,7 @@ Click the **Daggerheart Tracker** icon in the toolbar to open the dashboard. It 
 | Stat   | Glyph | Color  | Default (PC) | Default (NPC) |
 | ------ | ----- | ------ | ------------- | -------------- |
 | HP     | ♥     | Red    | 6/6           | 6/6            |
-| Stress | ‼     | Purple | 0/6           | 0/6            |
+| Stress | ⚡     | Purple | 0/6           | 0/6            |
 | Armor  | ⛊     | Gray   | 0/6           | Hidden (0/0)   |
 | Hope   | ✹     | Gold   | 2/5           | Hidden (0/0)   |
 

@@ -1,4 +1,4 @@
-import { buildShape, buildText, buildLine, Image, Math2, Item } from "@owlbear-rodeo/sdk";
+import { buildShape, buildText, buildLine, buildPath, Command, Image, Math2, Item, PathCommand } from "@owlbear-rodeo/sdk";
 import {
   EXTENSION_ID,
   BADGE_COLORS,
@@ -7,9 +7,10 @@ import {
   BADGE_GAP_RATIO,
   BADGE_FONT_RATIO,
   BADGE_FONT_RATIO_REDUCED,
-  GLYPHS,
-  GLYPH_FONT_SCALE,
-  GLYPH_SPACING,
+  COLORS,
+  GLYPH_PATHS,
+  GLYPH_PATH_SCALE,
+  GLYPH_Y_OFFSET_RATIO,
   StatType,
 } from "./constants";
 import { DaggerheartStats } from "./types";
@@ -58,15 +59,44 @@ function getImageBounds(item: Image, dpi: number) {
 }
 
 /**
- * Build a single stat badge (dark circle with glyph+number inside)
+ * Scale and translate normalized path commands to world coordinates.
+ * Each command type has a known number of coordinate pairs.
+ */
+function scalePathCommands(
+  normalized: PathCommand[],
+  scale: number,
+  offset: { x: number; y: number }
+): PathCommand[] {
+  return normalized.map((cmd): PathCommand => {
+    switch (cmd[0]) {
+      case Command.MOVE:
+        return [Command.MOVE, cmd[1] * scale + offset.x, cmd[2] * scale + offset.y];
+      case Command.LINE:
+        return [Command.LINE, cmd[1] * scale + offset.x, cmd[2] * scale + offset.y];
+      case Command.CUBIC:
+        return [
+          Command.CUBIC,
+          cmd[1] * scale + offset.x, cmd[2] * scale + offset.y,
+          cmd[3] * scale + offset.x, cmd[4] * scale + offset.y,
+          cmd[5] * scale + offset.x, cmd[6] * scale + offset.y,
+        ];
+      case Command.CLOSE:
+        return [Command.CLOSE];
+      default:
+        return cmd;
+    }
+  });
+}
+
+/**
+ * Build a stat badge: dark circle + vector glyph above + centered number inside.
  *
  * @param tokenId - The ID of the token to attach to
- * @param statType - Which stat this badge represents (for glyph)
+ * @param statType - Which stat this badge represents (determines glyph shape + color)
  * @param currentValue - The current value to display
- * @param position - Center position for the badge
+ * @param position - Center position for the badge circle
  * @param badgeSize - Computed badge diameter (scales with token)
  * @param critical - Whether this stat is in its critical/depleted state
- * @returns Array containing the circle shape, text label, and optional slash overlay
  */
 function buildStatBadge(
   tokenId: string,
@@ -76,26 +106,12 @@ function buildStatBadge(
   badgeSize: number,
   critical: boolean
 ): Item[] {
-  // Font sizes: number uses base ratio only, glyph also applies per-stat scale
+  const items: Item[] = [];
   const baseFontRatio = currentValue >= 10 ? BADGE_FONT_RATIO_REDUCED : BADGE_FONT_RATIO;
   const numberFontSize = Math.round(badgeSize * baseFontRatio);
-  const glyphFontSize = Math.round(badgeSize * baseFontRatio * GLYPH_FONT_SCALE[statType]);
-  const boxWidth = badgeSize; // each text item gets a box this wide
-  const textHeight = badgeSize + 2;
+  const statColors = COLORS[statType];
 
-  // Estimate visual widths to compute split point offset.
-  // The glyph and number meet at a split point; we shift it so the
-  // combined visual center aligns with the circle center.
-  const hasSpace = GLYPH_SPACING[statType].length > 0;
-  const glyphVisualWidth = glyphFontSize * 0.7 + (hasSpace ? glyphFontSize * 0.3 : 0);
-  const digitCount = String(currentValue).length;
-  const numberVisualWidth = numberFontSize * 0.55 * digitCount;
-  const splitOffset = (glyphVisualWidth - numberVisualWidth) / 2;
-  const splitX = position.x + splitOffset;
-
-  const items: Item[] = [];
-
-  // Dark circle background — always centered at position
+  // 1. Dark circle background
   const circle = buildShape()
     .shapeType("CIRCLE")
     .width(badgeSize)
@@ -104,8 +120,8 @@ function buildStatBadge(
     .fillColor(BADGE_COLORS.fill)
     .fillOpacity(0.85)
     .strokeColor(BADGE_COLORS.stroke)
-    .strokeWidth(1)
-    .strokeOpacity(0.6)
+    .strokeWidth(2)
+    .strokeOpacity(0.8)
     .attachedTo(tokenId)
     .locked(true)
     .disableHit(true)
@@ -118,57 +134,56 @@ function buildStatBadge(
       [`${EXTENSION_ID}/stat`]: statType,
     })
     .build();
-
   items.push(circle);
 
-  // Glyph — right-aligned, ending at the split point
-  const glyphText = `${GLYPHS[statType]}${GLYPH_SPACING[statType]}`;
-  const glyph = buildText()
-    .textType("PLAIN")
-    .plainText(glyphText)
-    .fontSize(glyphFontSize)
-    .fontWeight(700)
-    .fontFamily("Roboto, sans-serif")
-    .textAlign("RIGHT")
-    .textAlignVertical("MIDDLE")
-    .fillColor(BADGE_COLORS.text)
-    .position({
-      x: splitX - boxWidth,
-      y: position.y - badgeSize / 2 - 1,
-    })
-    .width(boxWidth)
-    .height(textHeight)
+  // 2. Vector glyph path — positioned above the circle center
+  const glyphCenter = {
+    x: position.x,
+    y: position.y + badgeSize * GLYPH_Y_OFFSET_RATIO,
+  };
+  const scaledCommands = scalePathCommands(
+    GLYPH_PATHS[statType],
+    badgeSize * GLYPH_PATH_SCALE,
+    glyphCenter
+  );
+  const glyphPath = buildPath()
+    .commands(scaledCommands)
+    .fillColor(statColors.filled)
+    .fillOpacity(1)
+    .strokeColor(statColors.stroke)
+    .strokeWidth(0.5)
+    .strokeOpacity(0.8)
+    .position({ x: 0, y: 0 })
     .attachedTo(tokenId)
     .locked(true)
     .disableHit(true)
     .visible(true)
-    .layer("TEXT")
+    .layer("ATTACHMENT")
     .disableAttachmentBehavior(["ROTATION", "COPY", "SCALE"])
     .metadata({
-      [`${EXTENSION_ID}/type`]: "stat-badge-glyph",
+      [`${EXTENSION_ID}/type`]: "stat-badge-glyph-path",
       [`${EXTENSION_ID}/tokenId`]: tokenId,
       [`${EXTENSION_ID}/stat`]: statType,
     })
     .build();
+  items.push(glyphPath);
 
-  items.push(glyph);
-
-  // Number — left-aligned, starting at the split point
-  const number = buildText()
+  // 3. Centered number inside the circle
+  const numberText = buildText()
     .textType("PLAIN")
     .plainText(`${currentValue}`)
     .fontSize(numberFontSize)
     .fontWeight(700)
     .fontFamily("Roboto, sans-serif")
-    .textAlign("LEFT")
+    .textAlign("CENTER")
     .textAlignVertical("MIDDLE")
     .fillColor(BADGE_COLORS.text)
     .position({
-      x: splitX,
+      x: position.x - badgeSize / 2,
       y: position.y - badgeSize / 2 - 1,
     })
-    .width(boxWidth)
-    .height(textHeight)
+    .width(badgeSize)
+    .height(badgeSize + 2)
     .attachedTo(tokenId)
     .locked(true)
     .disableHit(true)
@@ -181,14 +196,12 @@ function buildStatBadge(
       [`${EXTENSION_ID}/stat`]: statType,
     })
     .build();
+  items.push(numberText);
 
-  items.push(number);
-
-  // Diagonal line through circle when stat is in critical state
+  // 4. Critical slash — diagonal line through circle
   if (critical) {
     const r = badgeSize / 2;
-    // Line from bottom-left to top-right of the circle, at 45°
-    const offset = r * Math.cos(Math.PI / 4); // ≈ 0.707 * radius
+    const offset = r * Math.cos(Math.PI / 4);
     const slash = buildLine()
       .startPosition({
         x: position.x - offset,
@@ -198,7 +211,7 @@ function buildStatBadge(
         x: position.x + offset,
         y: position.y - offset,
       })
-      .strokeColor("#ef4444") // red-500
+      .strokeColor("#ef4444")
       .strokeWidth(3)
       .strokeOpacity(1)
       .attachedTo(tokenId)
@@ -213,7 +226,6 @@ function buildStatBadge(
         [`${EXTENSION_ID}/stat`]: statType,
       })
       .build();
-
     items.push(slash);
   }
 
@@ -223,7 +235,7 @@ function buildStatBadge(
 /**
  * Build all stat badges for a token
  *
- * Layout: Horizontal row of colored circles above the token
+ * Layout: Horizontal row of dark circles with vector glyphs above the token
  * Order: HP, Stress, Armor (if PC), Hope (if PC)
  *
  * Each badge shows the current value only (not max) for compactness.
@@ -265,9 +277,11 @@ export function buildAllBars(
   // Calculate total width of all badges
   const totalWidth = count * badgeSize + (count - 1) * gap;
 
-  // Position badges above token, centered horizontally
+  // Position badges above token, centered horizontally.
+  // Extra vertical space for the heart glyph that overhangs above the circle.
+  const glyphOverhang = badgeSize * 0.35;
   const startX = origin.x - totalWidth / 2 + badgeSize / 2;
-  const badgeY = origin.y - bounds.height / 2 - badgeSize / 2 - 4;
+  const badgeY = origin.y - bounds.height / 2 - badgeSize / 2 - 4 - glyphOverhang;
 
   // Build each badge
   statsToShow.forEach((stat, index) => {

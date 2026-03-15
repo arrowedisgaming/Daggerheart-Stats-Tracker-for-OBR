@@ -7,7 +7,7 @@ import { isItemTracked } from "./itemMetadata";
 import { loadSettings, isGM } from "./settings";
 
 // Item types created by this extension (for cleanup)
-const EXTENSION_ITEM_TYPES = ["segment", "stat-badge", "stat-badge-glyph", "stat-badge-text", "stat-badge-slash"];
+const EXTENSION_ITEM_TYPES = ["segment", "stat-badge", "stat-badge-glyph", "stat-badge-text", "stat-badge-slash", "stat-badge-glyph-path"];
 
 /**
  * Cache of last-rendered state per token, keyed by OBR item ID.
@@ -105,11 +105,14 @@ export async function renderBarsForToken(
   // Build new segments
   const segments = buildAllBars(token, stats, sceneDpi);
 
-  // Add to scene in three passes for correct z-ordering:
-  // 1. Circles (background), 2. Text (glyph+number), 3. Slash overlays (critical state)
+  // Add to scene in four passes for correct z-ordering:
+  // 1. Circles (background), 2. Glyph paths (heart above circle), 3. Text, 4. Slash overlays
   // OBR renders items from later addItems() calls above earlier ones.
   const circles = segments.filter(
     (item) => item.metadata[`${EXTENSION_ID}/type`] === "stat-badge"
+  );
+  const glyphPaths = segments.filter(
+    (item) => item.metadata[`${EXTENSION_ID}/type`] === "stat-badge-glyph-path"
   );
   const texts = segments.filter(
     (item) => {
@@ -121,6 +124,7 @@ export async function renderBarsForToken(
     (item) => item.metadata[`${EXTENSION_ID}/type`] === "stat-badge-slash"
   );
   if (circles.length > 0) await OBR.scene.items.addItems(circles);
+  if (glyphPaths.length > 0) await OBR.scene.items.addItems(glyphPaths);
   if (texts.length > 0) await OBR.scene.items.addItems(texts);
   if (slashes.length > 0) await OBR.scene.items.addItems(slashes);
   if (segments.length > 0) {

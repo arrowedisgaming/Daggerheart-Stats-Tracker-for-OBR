@@ -1,3 +1,5 @@
+@import './tokens.css';
+
 * {
   margin: 0;
   padding: 0;
@@ -6,12 +8,162 @@
 
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  background: #f5f5f5;
-  color: #333;
+  background: var(--dh-bg-primary);
+  color: var(--dh-text-primary);
 }
 
 #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+/* Dashboard layout */
+.dashboard {
+  padding: 16px;
+}
+
+.dashboard-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+/* GM settings row */
+.dashboard-setting {
+  margin-bottom: 12px;
+}
+
+.dashboard-setting label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--dh-text-secondary);
+  cursor: pointer;
+}
+
+.dashboard-setting input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.dashboard-setting-hint {
+  font-size: 11px;
+  color: var(--dh-text-muted);
+  margin-top: 4px;
+  margin-left: 24px;
+}
+
+/* Empty state */
+.dashboard-empty p {
+  color: var(--dh-text-muted);
+  font-size: 14px;
+  margin-bottom: 8px;
+}
+
+.dashboard-empty p:last-child {
+  font-size: 13px;
+}
+
+/* Token list */
+.dashboard-token-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+/* Section headers (PCs / NPCs) */
+.dashboard-section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--dh-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dashboard-section-header:first-child {
+  margin-top: 0;
+}
+
+.dashboard-section-toggle {
+  font-size: 10px;
+  transition: transform 0.15s;
+}
+
+.dashboard-section-toggle.collapsed {
+  transform: rotate(-90deg);
+}
+
+/* Character cards */
+.dashboard-card {
+  padding: 10px 12px;
+  background: var(--dh-bg-card);
+  border-radius: var(--dh-radius);
+  border: 1px solid var(--dh-border);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.dashboard-card:hover,
+.dashboard-card:focus-visible {
+  background: #2d3260;
+  border-color: var(--dh-focus-ring);
+}
+
+.dashboard-card:focus-visible {
+  outline: 2px solid var(--dh-focus-ring);
+  outline-offset: 1px;
+}
+
+.dashboard-card--npc {
+  opacity: 0.75;
+}
+
+.dashboard-card-name {
+  font-weight: 600;
+  margin-bottom: 6px;
+  font-size: 15px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.dashboard-stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.stat-label-hp {
+  color: var(--dh-red);
+  font-weight: 500;
+}
+
+.stat-label-stress {
+  color: var(--dh-purple);
+  font-weight: 500;
+}
+
+.stat-label-armor {
+  color: var(--dh-gray);
+  font-weight: 500;
+}
+
+.stat-label-hope {
+  color: var(--dh-yellow);
+  font-weight: 500;
+}
+
+/* Loading state */
+.dashboard-loading {
+  color: var(--dh-text-muted);
 }

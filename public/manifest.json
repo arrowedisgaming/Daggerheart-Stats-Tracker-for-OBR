@@ -1,6 +1,6 @@
 {
   "name": "Daggerheart Tracker",
-  "version": "0.8.0",
+  "version": "0.9.0-alpha",
   "manifest_version": 1,
   "author": "Arrowed",
   "icon": "https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/icon.svg",
@@ -10,7 +10,7 @@
     "title": "Daggerheart Tracker",
     "icon": "https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/icon.svg",
     "popover": "https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/index.html",
-    "height": 300,
+    "height": 400,
     "width": 280
   }
 }

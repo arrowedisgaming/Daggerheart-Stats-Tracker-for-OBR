@@ -4,7 +4,27 @@ All notable changes to Daggerheart Tracker will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [0.9.0-alpha] - 2026-03-15
+
+### Added
+- **Shared design tokens**: Unified CSS custom properties (`tokens.css`) used by both dashboard and popover for consistent theming
+- **Dark theme dashboard**: Dashboard now matches OBR's dark UI instead of the previous light theme
+- **NPC section in dashboard**: GM users see a collapsible "NPCs (N)" section below PCs, collapsed by default
+- **Clickable dashboard cards**: Click any character card in the dashboard to open the editing popover directly
+- **Remove confirmation**: Remove button now requires a two-step confirmation (click → "Confirm Remove?" / "Cancel") to prevent accidental deletion
+- **Save feedback**: "Saved!" flash on success (auto-closes after 800ms); error message stays visible on failure
+- **Accessible form labels**: All stat inputs now have proper `id`/`htmlFor` associations and `aria-label` attributes for screen readers
+- **Focus-visible styles**: Keyboard focus rings (`--dh-focus-ring`) on all interactive elements (buttons, inputs, checkboxes, cards)
+- **Token name overflow**: Long character names in dashboard cards now show ellipsis instead of breaking layout
+
+### Changed
+- **Dashboard cards use CSS classes**: Replaced ~25 inline `style={{}}` objects with semantic CSS classes (`.dashboard-card`, `.dashboard-stats-grid`, etc.)
+- **Popover CSS variables**: Migrated from local `--bg-primary` etc. to shared `--dh-bg-primary` tokens
+- **Input focus style**: Upgraded from subtle `border-color` change to blue ring (`box-shadow` + `border-color`) matching `--dh-focus-ring`
+- **Action popover height**: Increased from 300 → 400px to accommodate NPC section
+
+### Removed
+- **Tailwind CSS infrastructure**: Removed unused `tailwindcss`, `autoprefixer`, `postcss`, and `prettier-plugin-tailwindcss` dependencies plus config files (`tailwind.config.js`, `postcss.config.js`)
 
 ## [0.8.0] - 2026-03-15
 

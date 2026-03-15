@@ -11,6 +11,11 @@ export function Popover() {
   const [stats, setStats] = useState<DaggerheartStats | null>(null);
   const [isTracked, setIsTracked] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [confirmingRemove, setConfirmingRemove] = useState(false);
+  const [feedback, setFeedback] = useState<{
+    type: "success" | "error";
+    message: string;
+  } | null>(null);
 
   // Load data when popover opens
   useEffect(() => {
@@ -18,17 +23,27 @@ export function Popover() {
       setIsLoading(true);
 
       try {
-        // Get the currently selected items
-        const selection = await OBR.player.getSelection();
-        if (!selection || selection.length === 0) {
-          console.log("[DH] No selection in popover");
-          setIsLoading(false);
-          return;
+        let item: Item | undefined;
+
+        // Check for tokenId URL parameter (opened from dashboard card)
+        const params = new URLSearchParams(window.location.search);
+        const tokenId = params.get("tokenId");
+
+        if (tokenId) {
+          const items = await OBR.scene.items.getItems([tokenId]);
+          item = items[0];
+        } else {
+          // Fall back to current selection (context menu)
+          const selection = await OBR.player.getSelection();
+          if (!selection || selection.length === 0) {
+            console.log("[DH] No selection in popover");
+            setIsLoading(false);
+            return;
+          }
+          const items = await OBR.scene.items.getItems(selection);
+          item = items[0];
         }
 
-        // Get the first selected item
-        const items = await OBR.scene.items.getItems(selection);
-        const item = items[0];
         if (!item) {
           setIsLoading(false);
           return;
@@ -112,22 +127,31 @@ export function Popover() {
         setIsTracked(true);
       }
 
-      // Close popover
-      OBR.popover.close(`${EXTENSION_ID}/context-menu`);
+      // Show success feedback then close
+      setFeedback({ type: "success", message: "Saved!" });
+      setTimeout(() => {
+        OBR.popover.close(`${EXTENSION_ID}/context-menu`);
+      }, 800);
     } catch (error) {
       console.error("[DH] Error saving stats:", error);
+      setFeedback({ type: "error", message: "Failed to save" });
     }
   };
 
-  // Remove tracking
+  // Remove tracking (two-step confirmation)
   const handleRemove = async () => {
-    if (!selectedItem) return;
+    if (!confirmingRemove) {
+      setConfirmingRemove(true);
+      return;
+    }
 
     try {
-      await removeTracking(selectedItem, false);
+      await removeTracking(selectedItem!, false);
       OBR.popover.close(`${EXTENSION_ID}/context-menu`);
     } catch (error) {
       console.error("[DH] Error removing tracking:", error);
+      setFeedback({ type: "error", message: "Failed to remove" });
+      setConfirmingRemove(false);
     }
   };
 
@@ -198,8 +222,9 @@ export function Popover() {
 
         {/* PC/NPC Toggle */}
         <div className="stat-row toggle-row">
-          <label>
+          <label htmlFor="npc-toggle">
             <input
+              id="npc-toggle"
               type="checkbox"
               checked={!stats.isPC}
               onChange={(e) => handlePCToggle(!e.target.checked)}
@@ -210,14 +235,38 @@ export function Popover() {
         </div>
       </div>
 
+      {feedback && (
+        <div
+          className={`feedback ${feedback.type === "success" ? "feedback-success" : "feedback-error"}`}
+        >
+          {feedback.message}
+        </div>
+      )}
+
       <div className="popover-footer">
-        <button className="btn-primary" onClick={handleSave}>
-          {isTracked ? "Save" : "Add Tracking"}
-        </button>
-        {isTracked && (
-          <button className="btn-danger" onClick={handleRemove}>
-            Remove
-          </button>
+        {confirmingRemove ? (
+          <>
+            <button className="btn-danger" onClick={handleRemove}>
+              Confirm Remove?
+            </button>
+            <button
+              className="btn-cancel"
+              onClick={() => setConfirmingRemove(false)}
+            >
+              Cancel
+            </button>
+          </>
+        ) : (
+          <>
+            <button className="btn-primary" onClick={handleSave}>
+              {isTracked ? "Save" : "Add Tracking"}
+            </button>
+            {isTracked && (
+              <button className="btn-danger" onClick={handleRemove}>
+                Remove
+              </button>
+            )}
+          </>
         )}
       </div>
     </div>

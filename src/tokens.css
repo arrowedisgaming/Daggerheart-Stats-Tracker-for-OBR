@@ -1,0 +1,18 @@
+:root {
+  --dh-bg-primary: #1a1a2e;
+  --dh-bg-secondary: #16213e;
+  --dh-bg-card: #242845;
+  --dh-text-primary: #eee;
+  --dh-text-secondary: #aaa;
+  --dh-text-muted: #666;
+  --dh-border: #333;
+  --dh-red: #dc2626;
+  --dh-purple: #9333ea;
+  --dh-yellow: #eab308;
+  --dh-gray: #6b7280;
+  --dh-blue: #3b82f6;
+  --dh-danger: #ef4444;
+  --dh-focus-ring: #60a5fa;
+  --dh-radius: 6px;
+  --dh-radius-sm: 4px;
+}

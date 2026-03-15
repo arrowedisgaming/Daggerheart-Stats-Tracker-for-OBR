@@ -10,6 +10,11 @@ interface StatInputProps {
   onSubmit?: () => void;
 }
 
+/** Derive a stable DOM id from a label like "♥ HP" → "hp" */
+function labelToId(label: string): string {
+  return label.replace(/[^\w]/g, "").toLowerCase();
+}
+
 export function StatInput({
   label,
   current,
@@ -19,6 +24,12 @@ export function StatInput({
   color,
   onSubmit,
 }: StatInputProps) {
+  const baseId = labelToId(label);
+  const currentId = `${baseId}-current`;
+  const maxId = `${baseId}-max`;
+  // Strip glyph for readable aria labels (e.g., "♥ HP" → "HP")
+  const plainLabel = label.replace(/^[^\w]+/, "").trim();
+
   // Handle inline math (e.g., "+3", "-2") for current value, then submit
   const handleCurrentKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
@@ -57,9 +68,10 @@ export function StatInput({
 
   return (
     <div className={`stat-row stat-${color}`}>
-      <label>{label}</label>
+      <label htmlFor={currentId}>{label}</label>
       <div className="stat-inputs">
         <input
+          id={currentId}
           type="number"
           min={0}
           max={max}
@@ -67,9 +79,11 @@ export function StatInput({
           onChange={(e) => handleCurrentChange(parseInt(e.target.value) || 0)}
           onKeyDown={handleCurrentKeyDown}
           className="input-current"
+          aria-label={`${plainLabel} current value`}
         />
         <span className="separator">/</span>
         <input
+          id={maxId}
           type="number"
           min={1}
           max={20}
@@ -77,6 +91,7 @@ export function StatInput({
           onChange={(e) => onMaxChange(parseInt(e.target.value) || 1)}
           onKeyDown={handleMaxKeyDown}
           className="input-max"
+          aria-label={`${plainLabel} maximum value`}
         />
       </div>
     </div>

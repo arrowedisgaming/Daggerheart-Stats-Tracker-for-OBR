@@ -3,3 +3,5 @@ dist/
 pnpm-lock.yaml
 CLAUDE.md
 inspiring-code/
+.omc/
+.playwright-mcp/

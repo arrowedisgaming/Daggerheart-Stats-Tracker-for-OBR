@@ -1,71 +1,75 @@
 ---
-title: Owl Trackers
-description: Elegant system-agnostic token trackers
-author: Seamus Finlayson
-image: https://github.com/user-attachments/assets/d44f48ff-bb1b-4683-af7a-e991acb614ee
-icon: https://owl-trackers.onrender.com/owl-trackers-logo.svg
+title: Daggerheart Stats Tracker
+description: Simple HP, Stress, Hope, and Armor tracking for Daggerheart
+author: Arrowed
+image: https://raw.githubusercontent.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR/main/docs/images/PCs-hero.png
+icon: https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/icon.svg
 tags:
   - combat
-manifest: https://owl-trackers.onrender.com/manifest.json
-learn-more: https://github.com/SeamusFinlayson/owl-trackers
+  - tool
+manifest: https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/manifest.json
+learn-more: https://github.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR
 ---
 
-# Owl Trackers
+# Daggerheart Stats Tracker
 
-_Elegant system-agnostic token trackers_
+Compact circular badges render above each character token showing HP, Stress, Armor, and Hope — with stat glyphs, critical state indicators, and cross-scene persistence.
 
-## How it Works
+![PC token with stat badges and the Party Stats dashboard](https://raw.githubusercontent.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR/main/docs/images/StatsAndList.png)
 
-This extension allows you to track up to twelve stats on your tokens for any gaming system you use.
+**Circular Stat Badges**
 
-### The Basics
+Each tracked token gets compact badges above it displaying current values with colored vector glyphs — ♥ HP, ⚡ Stress, ⛊ Armor, ✹ Hope. Badges scale proportionally with token size so they stay readable at any zoom level.
 
-**Right click** on a token to access the **context menu embed** and edit a token's stats.
+**Critical State Indicators**
 
-![Context Menu](https://github.com/user-attachments/assets/03a5a0db-0ba1-4a8a-acf1-4fdae8e572aa)
+A red slash overlay appears when a stat reaches its critical state — HP, Stress, or Armor at maximum, or Hope at zero — so danger is visible at a glance.
 
-**Inline math** lets you do addition or subtraction inside a tracker's text field.
+**PC and NPC Modes**
 
-<img name="Inline Math" src="https://github.com/user-attachments/assets/44df0133-b004-46ea-a331-835d7dcac15b" width=500>
+Player Characters track all four stats. NPCs show only HP and Stress by default, keeping their badges visually lighter. GMs can also hide NPC badges from the scene entirely.
 
-There are three different inline math commands, using 7 as an example number:
+| PC (all 4 stats) | NPC (HP & Stress only) | NPC with critical state |
+|:-:|:-:|:-:|
+| ![](https://raw.githubusercontent.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR/main/docs/images/PCs-hero.png) | ![](https://raw.githubusercontent.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR/main/docs/images/NPC1.png) | ![](https://raw.githubusercontent.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR/main/docs/images/NPC-Full.png) |
 
-- "-7" subtract 7 from the current tracker value
-- "+7" add 7 to the current tracker value
-- "=-7" set the trackers value to -7
+**Party Stats Dashboard**
 
-The **three dots icon** in the context embed opens the **editor** which gives you more in depth control over a token's trackers.
+Click the Daggerheart Stats Tracker icon in the toolbar to open a live summary of all PC stats in the current scene. Auto-updates as stats change, with a collapsible NPC section for GMs.
 
-In the editor you can give a tracker a name, a colour, toggle whether or not it is displayed on the map, toggle whether or not inline math is enabled, and rearrange the trackers. You may want to disable inline math if you want to store negative numbers in the tracker.
+**Cross-Scene Persistence**
 
-![Editor](https://github.com/user-attachments/assets/070fa0ae-6191-4a7c-acf9-98bd7e837e9a)
+Stats are stored in room metadata, so they survive scene changes within the same room. Each token is tracked by a stable UUID — renaming or copying tokens won't break their stats.
 
-### Scene Defaults
+**Math Expressions**
 
-You can set default trackers for the scene in the **action popover** by clicking the three dots icon next to the "Set scene default trackers" label.
+Type `+2` or `-3` in any stat field and press Enter to apply the delta and save in one step.
 
-This will open the **scene defaults editor**, which is very similar to the editor but for the scene instead of a specific token. Say, for example, that you play D&D. You might want every creature to have Hit Points, Temporary Hit Points and Armor Class.
+## How to Use
 
-![Scene Trackers](https://github.com/user-attachments/assets/eb41f257-422a-4983-9321-054b197fd479)
+**Add stats to a token**
 
-Once you've set the defaults for the scene you can add them to any token with a single click.
+Right-click a character token → **Add Daggerheart Stats**, then set HP, Stress, Armor, and Hope. Badges appear above the token automatically.
 
-<img name="Use Scene Defaults" src="https://github.com/user-attachments/assets/cf9cadfb-b9f6-48ca-810b-03680d35aba6" width=500>
+**Edit stats**
 
-### Uninstalling
+Right-click a tracked token → **Edit Daggerheart Stats**. Adjust values directly, or type math expressions like `+2` or `-1` and press Enter. Toggle between PC and NPC mode as needed.
 
-Refresh your page after uninstalling the extension to clear trackers from the map. Token data will **not** be deleted by uninstalling.
+![Right-click context menu and stat editor popover](https://raw.githubusercontent.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR/main/docs/images/RightClickPC.png)
 
-## Feature Requests
+## Stats Reference
 
-I may accept feature requests but - as I have limited time and development plans of my own - being a paid member on [Patreon](https://www.patreon.com/SeamusFinlayson) is your best path to getting a feature implemented.
+| Stat   | Glyph | Color  | Default (PC) | Default (NPC) |
+| ------ | ----- | ------ | ------------ | ------------- |
+| HP     | ♥     | Red    | 6/6          | 6/6           |
+| Stress | ⚡     | Purple | 0/6          | 0/6           |
+| Armor  | ⛊     | Gray   | 0/6          | Hidden        |
+| Hope   | ✹     | Gold   | 2/5          | Hidden        |
+
+## Credits
+
+Based on [Owl Trackers](https://github.com/SeamusFinlayson/owl-trackers) by Seamus Finlayson, licensed under GNU GPLv3. Modified for Daggerheart by Arrowed.
 
 ## Support
 
-If you need support for this extension you can message me in the [Owlbear Rodeo Discord](https://discord.gg/yWSErB6Qaj) @Seamus or open an issue on [GitHub](https://github.com/SeamusFinlayson/owl-trackers).
-
-If you like using this extension consider [supporting me on Patreon](https://www.patreon.com/SeamusFinlayson) where paid members can request features. You can also follow along there as a free member for updates.
-
-## Attributions
-
-The logo uses the image "[Owl Origami](https://www.svgrepo.com/svg/423815/owl-origami-paper)" by [Lima Studios](https://dribbble.com/limastd?ref=svgrepo.com), licensed under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+For bug reports, feature requests, or questions, open an issue on [GitHub](https://github.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR/issues).

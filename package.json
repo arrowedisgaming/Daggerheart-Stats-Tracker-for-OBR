@@ -1,10 +1,19 @@
 {
   "name": "dhobrstats",
   "private": true,
-  "version": "0.9.0-alpha",
+  "version": "0.9.0",
   "type": "module",
   "description": "Daggerheart stat tracking for Owlbear Rodeo",
   "author": "Arrowed",
+  "license": "GPL-3.0-or-later",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR.git"
+  },
+  "homepage": "https://arrowedisgaming.github.io/Daggerheart-Stats-Tracker-for-OBR/",
+  "bugs": {
+    "url": "https://github.com/arrowedisgaming/Daggerheart-Stats-Tracker-for-OBR/issues"
+  },
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",

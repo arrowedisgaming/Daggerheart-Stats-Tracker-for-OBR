@@ -1,5 +1,5 @@
 /**
- * Core type definitions for the Daggerheart Tracker
+ * Core type definitions for the Daggerheart Stats Tracker
  */
 
 /**

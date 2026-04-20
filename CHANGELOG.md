@@ -1,12 +1,15 @@
 # Changelog
 
-All notable changes to Daggerheart Tracker will be documented in this file.
+All notable changes to Daggerheart Stats Tracker will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [0.9.0-alpha] - 2026-03-15
+## [0.9.0] - 2026-04-20
 
 ### Added
+- **OBR Extension Store listing**: New `docs/store.md` with frontmatter, hero image, feature breakdown, and support contact (replaces leftover Owl Trackers listing)
+- **LICENSE file**: GNU GPLv3 added to repo root (previously declared only in README)
+- **`package.json` metadata**: Added `license`, `repository`, `homepage`, and `bugs` fields for store and registry compatibility
 - **Shared design tokens**: Unified CSS custom properties (`tokens.css`) used by both dashboard and popover for consistent theming
 - **Dark theme dashboard**: Dashboard now matches OBR's dark UI instead of the previous light theme
 - **NPC section in dashboard**: GM users see a collapsible "NPCs (N)" section below PCs, collapsed by default
@@ -18,6 +21,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - **Token name overflow**: Long character names in dashboard cards now show ellipsis instead of breaking layout
 
 ### Changed
+- **Renamed to "Daggerheart Stats Tracker"**: Updated display name across manifest (`name`, `action.title`), dashboard heading, browser tab title, README, and store listing for consistency. The on-disk extension ID (`daggerheart-tracker`) and persisted metadata namespaces are unchanged, so existing installs and saved stats are unaffected.
+- **Version**: Dropped `-alpha` suffix; this is the first release prepared for the OBR Extension Store
 - **Dashboard cards use CSS classes**: Replaced ~25 inline `style={{}}` objects with semantic CSS classes (`.dashboard-card`, `.dashboard-stats-grid`, etc.)
 - **Popover CSS variables**: Migrated from local `--bg-primary` etc. to shared `--dh-bg-primary` tokens
 - **Input focus style**: Upgraded from subtle `border-color` change to blue ring (`box-shadow` + `border-color`) matching `--dh-focus-ring`

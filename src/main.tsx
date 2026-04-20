@@ -9,13 +9,13 @@ import { EXTENSION_ID, GLYPHS } from "./constants";
 import "./index.css";
 
 /**
- * Main entry point for the Daggerheart Tracker extension
+ * Main entry point for the Daggerheart Stats Tracker extension
  * This runs when the extension action popover is opened.
  * Context menu and rendering listeners are set up in background.ts,
  * which runs once when the extension loads.
  */
 OBR.onReady(async () => {
-  console.log("[DH] Daggerheart Tracker popover opened");
+  console.log("[DH] Daggerheart Stats Tracker popover opened");
 
   // Render the stats dashboard
   const root = ReactDOM.createRoot(document.getElementById("root")!);
@@ -112,7 +112,7 @@ function ActionPopover() {
   if (loading) {
     return (
       <div className="dashboard">
-        <h1 className="dashboard-title">Daggerheart Tracker</h1>
+        <h1 className="dashboard-title">Daggerheart Stats Tracker</h1>
         <p className="dashboard-loading">Loading...</p>
       </div>
     );

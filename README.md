@@ -1,4 +1,4 @@
-# Daggerheart Tracker for Owlbear Rodeo
+# Daggerheart Stats Tracker for Owlbear Rodeo
 
 A free [Owlbear Rodeo](https://www.owlbear.rodeo) extension for tracking Daggerheart RPG character stats. Compact circular badges render above each token showing HP, Stress, Armor, and Hope — with stat glyphs, critical state indicators, and cross-scene persistence.
 
@@ -46,7 +46,7 @@ Right-click a tracked token → **Edit Daggerheart Stats** to open the stat edit
 
 ### Party Stats Dashboard
 
-Click the **Daggerheart Tracker** icon in the toolbar to open the dashboard. It shows a live summary of all PC stats in the current scene — auto-updates when stats change.
+Click the **Daggerheart Stats Tracker** icon in the toolbar to open the dashboard. It shows a live summary of all PC stats in the current scene — auto-updates when stats change.
 
 ### GM Settings
 

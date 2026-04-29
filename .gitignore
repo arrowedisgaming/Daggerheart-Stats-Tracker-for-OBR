@@ -1,6 +1,7 @@
 node_modules/
 dist/
 pnpm-lock.yaml
+package-lock.json
 CLAUDE.md
 inspiring-code/
 .omc/

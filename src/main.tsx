@@ -75,6 +75,10 @@ function ActionPopover() {
       setNpcTokens(npcs);
     } catch (error) {
       console.error("[DH] Error loading tokens:", error);
+      OBR.notification.show(
+        "Daggerheart: failed to load party stats",
+        "ERROR"
+      );
     }
     setLoading(false);
   }, []);
@@ -101,12 +105,21 @@ function ActionPopover() {
     loadTokens();
 
     // Refresh when room metadata changes (stats updated)
-    const unsubscribe = OBR.room.onMetadataChange(() => {
+    const unsubscribeRoom = OBR.room.onMetadataChange(() => {
       console.log("[DH] Dashboard: Stats changed, reloading tokens");
       loadTokens();
     });
 
-    return () => unsubscribe();
+    // React to GM/PLAYER role changes mid-session so the GM-only UI
+    // appears or disappears without needing to reopen the dashboard.
+    const unsubscribePlayer = OBR.player.onChange((player) => {
+      setIsGMUser(player.role === "GM");
+    });
+
+    return () => {
+      unsubscribeRoom();
+      unsubscribePlayer();
+    };
   }, [loadTokens]);
 
   if (loading) {

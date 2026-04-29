@@ -5,7 +5,14 @@ import { DaggerheartStats } from "./types";
 /**
  * Metadata key for storing the stable token ID
  */
-const TOKEN_ID_KEY = `${EXTENSION_ID}/token-id`;
+export const TOKEN_ID_KEY = `${EXTENSION_ID}/token-id`;
+
+/**
+ * Read the stable token UUID from an item's metadata, if present.
+ */
+export function getTokenIdFromItem(item: Item): string | undefined {
+  return item.metadata?.[TOKEN_ID_KEY] as string | undefined;
+}
 
 /**
  * Generate a stable UUID for token identification
@@ -144,15 +151,23 @@ export async function saveTokenStats(
  */
 export async function removeTokenStats(item: Item): Promise<void> {
   const tokenId = await getOrCreateTokenId(item);
+  await removeTokenStatsById(tokenId);
+  console.log(`[DH] Removed stats for ${item.name} (${tokenId})`);
+}
+
+/**
+ * Remove stats by stable UUID. Used when the source token is no longer
+ * available (e.g. it was deleted from the scene).
+ */
+export async function removeTokenStatsById(tokenId: string): Promise<void> {
   const allData = await loadAllTokenData();
+  if (!(tokenId in allData)) return;
 
   delete allData[tokenId];
 
   await OBR.room.setMetadata({
     [getMetadataKey()]: allData,
   });
-
-  console.log(`[DH] Removed stats for ${item.name} (${tokenId})`);
 }
 
 /**

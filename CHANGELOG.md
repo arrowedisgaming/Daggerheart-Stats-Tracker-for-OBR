@@ -4,6 +4,20 @@ All notable changes to Daggerheart Stats Tracker will be documented in this file
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.10.0] - 2026-04-29
+
+### Added
+- **Theme-aware badges**: Badges adapt to OBR's light/dark UI via `OBR.theme.getTheme` + `OBR.theme.onChange`; new `BADGE_COLORS_LIGHT` palette inverts fill/text/stroke for light mode
+- **Quick-action context menu items**: Right-click a tracked token for inline `−1 HP` and `+1 Stress` on any tracked token, plus `+1 Hope` on tracked PCs. Values are clamped at 0/max. New Lucide-style icons under `public/icons/` (`heart-minus.svg`, `zap-plus.svg`, `star-plus.svg`)
+- **Live role updates**: Dashboard subscribes to `OBR.player.onChange` so the GM-only NPC section appears/disappears mid-session without reopening
+- **Error toasts**: Save / load / remove failures in the popover and dashboard now surface via `OBR.notification.show` instead of being silent
+- **Token-deletion cleanup**: Deleting a tracked token now also removes its room-metadata entry (GM-gated to avoid concurrent writes; deletion-detection cache is reset on scene close so cross-scene transitions aren't misread as deletions)
+
+### Changed
+- **Local badge rendering**: Migrated from `OBR.scene.items` to `OBR.scene.local`. Each client renders its own badges from shared room metadata, removing the GM-only render gate and cross-client races. Players now see updates instantly without depending on a connected GM client
+- **Item metadata mirrors `isPC`**: PC/NPC state is also written to item metadata so the `+1 Hope` context-menu filter can target PCs (KeyFilters can't read room metadata where the full stats live). Existing tracked tokens get the flag the next time their stats are saved
+- **README**: Architecture note updated to reflect the local-item rendering model
+
 ## [0.9.0] - 2026-04-20
 
 ### Added

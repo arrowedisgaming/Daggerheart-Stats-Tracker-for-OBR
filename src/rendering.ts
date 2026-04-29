@@ -1,7 +1,6 @@
 import { buildShape, buildText, buildLine, buildPath, Command, Image, Math2, Item, PathCommand } from "@owlbear-rodeo/sdk";
 import {
   EXTENSION_ID,
-  BADGE_COLORS,
   BADGE_SIZE_MIN,
   BADGE_SIZE_MAX,
   BADGE_GAP_RATIO,
@@ -12,6 +11,8 @@ import {
   GLYPH_PATH_SCALE,
   GLYPH_Y_OFFSET_RATIO,
   StatType,
+  ThemeMode,
+  getBadgeColors,
 } from "./constants";
 import { DaggerheartStats } from "./types";
 
@@ -104,12 +105,14 @@ function buildStatBadge(
   currentValue: number,
   position: { x: number; y: number },
   badgeSize: number,
-  critical: boolean
+  critical: boolean,
+  themeMode: ThemeMode
 ): Item[] {
   const items: Item[] = [];
   const baseFontRatio = currentValue >= 10 ? BADGE_FONT_RATIO_REDUCED : BADGE_FONT_RATIO;
   const numberFontSize = Math.round(badgeSize * baseFontRatio);
   const statColors = COLORS[statType];
+  const badgeColors = getBadgeColors(themeMode);
 
   // 1. Dark circle background
   const circle = buildShape()
@@ -117,9 +120,9 @@ function buildStatBadge(
     .width(badgeSize)
     .height(badgeSize)
     .position(position)
-    .fillColor(BADGE_COLORS.fill)
+    .fillColor(badgeColors.fill)
     .fillOpacity(0.85)
-    .strokeColor(BADGE_COLORS.stroke)
+    .strokeColor(badgeColors.stroke)
     .strokeWidth(2)
     .strokeOpacity(0.8)
     .attachedTo(tokenId)
@@ -177,7 +180,7 @@ function buildStatBadge(
     .fontFamily("Roboto, sans-serif")
     .textAlign("CENTER")
     .textAlignVertical("MIDDLE")
-    .fillColor(BADGE_COLORS.text)
+    .fillColor(badgeColors.text)
     .position({
       x: position.x - badgeSize / 2,
       y: position.y - badgeSize / 2 - 1,
@@ -243,7 +246,8 @@ function buildStatBadge(
 export function buildAllBars(
   item: Image,
   stats: DaggerheartStats,
-  sceneDpi: number
+  sceneDpi: number,
+  themeMode: ThemeMode = "DARK"
 ): Item[] {
   const allItems: Item[] = [];
 
@@ -286,7 +290,7 @@ export function buildAllBars(
   // Build each badge
   statsToShow.forEach((stat, index) => {
     const x = startX + index * (badgeSize + gap);
-    allItems.push(...buildStatBadge(item.id, stat.type, stat.value, { x, y: badgeY }, badgeSize, stat.critical));
+    allItems.push(...buildStatBadge(item.id, stat.type, stat.value, { x, y: badgeY }, badgeSize, stat.critical, themeMode));
   });
 
   return allItems;

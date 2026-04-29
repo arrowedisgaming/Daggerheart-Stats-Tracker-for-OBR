@@ -65,7 +65,7 @@ Click the **Daggerheart Stats Tracker** icon in the toolbar to open the dashboar
 
 Stats are stored in Owlbear Rodeo room metadata, so they persist across scene changes within the same room. Each token is identified by a stable UUID — renaming or copying tokens won't break their stats.
 
-Badges are rendered as OBR Shape items attached to tokens. Only the GM client creates/deletes badge shapes to prevent race conditions in multiplayer sessions.
+Badges are rendered as OBR local items, so each connected client draws its own copy from the shared room metadata. This avoids cross-client races and means players see badges as soon as stats change, without depending on a connected GM client.
 
 ## Changelog
 

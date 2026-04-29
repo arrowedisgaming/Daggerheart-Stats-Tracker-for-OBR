@@ -65,6 +65,10 @@ export function Popover() {
         }
       } catch (error) {
         console.error("[DH] Error loading popover data:", error);
+        OBR.notification.show(
+          "Daggerheart: failed to load token stats",
+          "ERROR"
+        );
       }
 
       setIsLoading(false);
@@ -135,6 +139,7 @@ export function Popover() {
     } catch (error) {
       console.error("[DH] Error saving stats:", error);
       setFeedback({ type: "error", message: "Failed to save" });
+      OBR.notification.show("Daggerheart: failed to save stats", "ERROR");
     }
   };
 
@@ -151,6 +156,7 @@ export function Popover() {
     } catch (error) {
       console.error("[DH] Error removing tracking:", error);
       setFeedback({ type: "error", message: "Failed to remove" });
+      OBR.notification.show("Daggerheart: failed to remove tracking", "ERROR");
       setConfirmingRemove(false);
     }
   };

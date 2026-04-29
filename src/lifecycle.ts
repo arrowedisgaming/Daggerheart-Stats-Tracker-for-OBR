@@ -1,10 +1,24 @@
 import OBR, { Item, isImage, Image } from "@owlbear-rodeo/sdk";
-import { EXTENSION_ID } from "./constants";
+import { EXTENSION_ID, ThemeMode } from "./constants";
 import { DaggerheartStats } from "./types";
 import { buildAllBars } from "./rendering";
 import { loadTokenStats } from "./persistence";
 import { isItemTracked } from "./itemMetadata";
-import { loadSettings, isGM } from "./settings";
+import { loadSettings } from "./settings";
+
+/**
+ * Current OBR theme mode. Updated by listeners.ts via OBR.theme.onChange
+ * so badges adapt to light/dark UI without going through the room-metadata
+ * round trip.
+ */
+let currentThemeMode: ThemeMode = "DARK";
+
+export function setThemeMode(mode: ThemeMode): void {
+  if (currentThemeMode === mode) return;
+  currentThemeMode = mode;
+  // Drop the cache so every tracked token re-renders with new colors.
+  renderCache.clear();
+}
 
 // Item types created by this extension (for cleanup)
 const EXTENSION_ITEM_TYPES = ["segment", "stat-badge", "stat-badge-glyph", "stat-badge-text", "stat-badge-slash", "stat-badge-glyph-path"];
@@ -44,19 +58,13 @@ export function invalidateTokenCache(tokenId: string): void {
 }
 
 /**
- * Remove all stat display items attached to a specific token
- * Only GM can manage bar shapes
+ * Remove all stat display items attached to a specific token.
+ * Operates on local items so each client cleans up its own badges.
  */
 export async function clearBarsForToken(tokenId: string): Promise<void> {
-  // Only GM manages bar shapes
-  const gmMode = await isGM();
-  if (!gmMode) {
-    return;
-  }
+  const localItems = await OBR.scene.local.getItems();
 
-  const sceneItems = await OBR.scene.items.getItems();
-
-  const itemIds = sceneItems
+  const itemIds = localItems
     .filter((item) => {
       const meta = item.metadata || {};
       const itemType = meta[`${EXTENSION_ID}/type`] as string;
@@ -68,44 +76,32 @@ export async function clearBarsForToken(tokenId: string): Promise<void> {
     .map((item) => item.id);
 
   if (itemIds.length > 0) {
-    await OBR.scene.items.deleteItems(itemIds);
+    await OBR.scene.local.deleteItems(itemIds);
     console.log(`[DH] Cleared ${itemIds.length} stat items for ${tokenId}`);
   }
 
-  // Remove from cache
   renderCache.delete(tokenId);
 }
 
 /**
- * Render bars for a token (clears existing bars first)
- * Only GM can manage bar shapes
+ * Render bars for a token (clears existing bars first).
+ * Badges are added as local items so each client renders independently.
  */
 export async function renderBarsForToken(
   token: Item,
   stats: DaggerheartStats
 ): Promise<void> {
-  // Only GM manages bar shapes
-  const gmMode = await isGM();
-  if (!gmMode) {
-    return;
-  }
-
-  // Only render for image items (CHARACTER tokens)
   if (!isImage(token)) {
     console.warn(`[DH] Cannot render bars for non-image item: ${token.name}`);
     return;
   }
 
-  // Clear any existing bars
   await clearBarsForToken(token.id);
 
-  // Get scene DPI for proper positioning
   const sceneDpi = await OBR.scene.grid.getDpi();
+  const segments = buildAllBars(token, stats, sceneDpi, currentThemeMode);
 
-  // Build new segments
-  const segments = buildAllBars(token, stats, sceneDpi);
-
-  // Add to scene in four passes for correct z-ordering:
+  // Add in four passes for correct z-ordering:
   // 1. Circles (background), 2. Glyph paths (heart above circle), 3. Text, 4. Slash overlays
   // OBR renders items from later addItems() calls above earlier ones.
   const circles = segments.filter(
@@ -123,33 +119,24 @@ export async function renderBarsForToken(
   const slashes = segments.filter(
     (item) => item.metadata[`${EXTENSION_ID}/type`] === "stat-badge-slash"
   );
-  if (circles.length > 0) await OBR.scene.items.addItems(circles);
-  if (glyphPaths.length > 0) await OBR.scene.items.addItems(glyphPaths);
-  if (texts.length > 0) await OBR.scene.items.addItems(texts);
-  if (slashes.length > 0) await OBR.scene.items.addItems(slashes);
+  if (circles.length > 0) await OBR.scene.local.addItems(circles);
+  if (glyphPaths.length > 0) await OBR.scene.local.addItems(glyphPaths);
+  if (texts.length > 0) await OBR.scene.local.addItems(texts);
+  if (slashes.length > 0) await OBR.scene.local.addItems(slashes);
   if (segments.length > 0) {
     console.log(`[DH] Rendered ${segments.length} bar segments for ${token.name}`);
   }
 
-  // Update cache with stats + geometry
   renderCache.set(token.id, serializeRenderState(stats, token));
 }
 
 /**
- * Clear all stat display items created by this extension
- * Only GM can manage (create/delete) bar shapes to prevent race conditions
+ * Clear all stat display items created by this extension on this client.
  */
 export async function clearAllBars(): Promise<void> {
-  // Only GM manages bar shapes
-  const gmMode = await isGM();
-  if (!gmMode) {
-    console.log("[DH] Skipping clearAllBars - not GM");
-    return;
-  }
+  const localItems = await OBR.scene.local.getItems();
 
-  const sceneItems = await OBR.scene.items.getItems();
-
-  const itemIds = sceneItems
+  const itemIds = localItems
     .filter((item) => {
       const meta = item.metadata || {};
       const itemType = meta[`${EXTENSION_ID}/type`] as string;
@@ -158,26 +145,19 @@ export async function clearAllBars(): Promise<void> {
     .map((item) => item.id);
 
   if (itemIds.length > 0) {
-    await OBR.scene.items.deleteItems(itemIds);
+    await OBR.scene.local.deleteItems(itemIds);
     console.log(`[DH] Cleared all stat items (${itemIds.length} items)`);
   }
 
-  // Clear cache
   renderCache.clear();
 }
 
 /**
  * Refresh bars for all tracked tokens, only re-rendering tokens whose stats changed.
  * Compares current stats against cached values to avoid unnecessary delete/recreate cycles.
- * Only GM can manage (create/delete) bar shapes to prevent race conditions.
+ * Runs on every client; badges are local-only, so there are no cross-client races.
  */
 export async function refreshAllBars(): Promise<void> {
-  const gmMode = await isGM();
-  if (!gmMode) {
-    console.log("[DH] Skipping refreshAllBars - not GM");
-    return;
-  }
-
   console.log("[DH] Refreshing all bars (selective)");
 
   // Check visibility settings
@@ -233,16 +213,9 @@ export async function refreshAllBars(): Promise<void> {
 }
 
 /**
- * Handle a single token being added or needing refresh
- * Only GM can manage bar shapes
+ * Handle a single token being added or needing refresh.
  */
 export async function refreshBarsForToken(token: Item): Promise<void> {
-  // Only GM manages bar shapes
-  const gmMode = await isGM();
-  if (!gmMode) {
-    return;
-  }
-
   if (!isItemTracked(token)) {
     // Not tracked, ensure no bars exist
     await clearBarsForToken(token.id);

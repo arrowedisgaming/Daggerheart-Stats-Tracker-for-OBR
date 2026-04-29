@@ -18,13 +18,26 @@ export const BADGE_FONT_RATIO = 0.55; // Font size as fraction of badge size
 export const BADGE_FONT_RATIO_REDUCED = 0.50; // Reduced font for 2-digit numbers
 
 /**
- * Uniform badge colors — glyphs provide stat differentiation
+ * Uniform badge colors — glyphs provide stat differentiation.
+ * Two palettes so badges adapt to OBR's light/dark theme.
  */
-export const BADGE_COLORS = {
+export const BADGE_COLORS_DARK = {
   fill: "#1e293b", // slate-800
   stroke: "#f8fafc", // slate-50 (white)
   text: "#f8fafc", // slate-50
 } as const;
+
+export const BADGE_COLORS_LIGHT = {
+  fill: "#f8fafc", // slate-50
+  stroke: "#1e293b", // slate-800
+  text: "#0f172a", // slate-900
+} as const;
+
+export type ThemeMode = "DARK" | "LIGHT";
+
+export function getBadgeColors(mode: ThemeMode) {
+  return mode === "LIGHT" ? BADGE_COLORS_LIGHT : BADGE_COLORS_DARK;
+}
 
 /**
  * Legacy per-stat colors (kept for popover UI)

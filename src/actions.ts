@@ -1,7 +1,7 @@
 import { Item } from "@owlbear-rodeo/sdk";
 import { DaggerheartStats } from "./types";
 import { saveTokenStats, removeTokenStats } from "./persistence";
-import { markItemAsTracked, unmarkItemAsTracked } from "./itemMetadata";
+import { markItemAsTracked, unmarkItemAsTracked, setItemPCFlag } from "./itemMetadata";
 import { clearBarsForToken } from "./lifecycle";
 
 /**
@@ -14,8 +14,8 @@ export async function initializeTracking(
 ): Promise<void> {
   console.log(`[DH] Initializing tracking for token:`, item.name);
 
-  // Mark item as tracked
   await markItemAsTracked(item.id);
+  await setItemPCFlag(item.id, stats.isPC);
 
   // Save to room metadata — the metadata change listener will handle rendering
   await saveTokenStats(item, stats);
@@ -31,7 +31,7 @@ export async function updateStats(
 ): Promise<void> {
   console.log(`[DH] Updating stats for token:`, item.name);
 
-  // Save updated stats — the metadata change listener will handle rendering
+  await setItemPCFlag(item.id, stats.isPC);
   await saveTokenStats(item, stats);
 }
 

@@ -2,6 +2,20 @@ import OBR, { Item } from "@owlbear-rodeo/sdk";
 import { EXTENSION_ID } from "./constants";
 
 const TRACKED_KEY = `${EXTENSION_ID}/tracked`;
+export const IS_PC_KEY = `${EXTENSION_ID}/isPC`;
+
+/**
+ * Mirror the PC/NPC flag onto the item itself so the OBR context-menu
+ * filter can pick it up (filters can only inspect item metadata, not
+ * room metadata where the full stats live).
+ */
+export async function setItemPCFlag(itemId: string, isPC: boolean): Promise<void> {
+  await OBR.scene.items.updateItems([itemId], (items) => {
+    for (const item of items) {
+      item.metadata[IS_PC_KEY] = isPC;
+    }
+  });
+}
 
 /**
  * Mark an item as being tracked by this extension
